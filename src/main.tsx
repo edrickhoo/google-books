@@ -7,7 +7,13 @@ import ErrorPage from "./error-page";
 import Root from "./routes/root/root";
 import { QueryClient, QueryClientProvider } from "react-query";
 
-export const queryClient = new QueryClient();
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const router = createBrowserRouter([
   {

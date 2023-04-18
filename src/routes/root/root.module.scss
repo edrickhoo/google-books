@@ -1,0 +1,23 @@
+.SearchingText {
+  padding: 10px;
+}
+
+.SearchingTextOff {
+  visibility: hidden;
+}
+
+.Link:hover {
+  color: blue;
+  cursor: pointer;
+}
+
+.SortActiveDesc:after {
+  content: "▲";
+  margin-left: 5px;
+  cursor: pointer;
+}
+.SortActiveAsc:after {
+  content: "▼";
+  margin-left: 5px;
+  cursor: pointer;
+}

@@ -24,7 +24,7 @@ export interface organisedBooksData {
   description: string;
 }
 
-interface fetchBooksBySearchInputResponse {
+export interface fetchBooksBySearchInputResponse {
   kind: string;
   totalItems: number;
   items: organisedBooksData[];
@@ -33,8 +33,15 @@ interface fetchBooksBySearchInputResponse {
 export const fetchBooksBySearchInput = async (
   input: string
 ): Promise<fetchBooksBySearchInputResponse> => {
+  if (input === "") {
+    throw new Error("Please enter something before searching");
+  }
   const res = await fetch(BASE_URL + `?q=${input || ""}`);
   const data = await res.json();
+
+  if (data.totalItems === 0) {
+    throw new Error(`No books with ${input} was found`);
+  }
 
   const organisedBooks = data?.items?.map((item: booksApiResponse) => {
     return {
@@ -44,7 +51,7 @@ export const fetchBooksBySearchInput = async (
       publishedDate: item.volumeInfo.publishedDate,
       subtitle: item.volumeInfo.subtitle,
       image: item.volumeInfo?.imageLinks?.thumbnail,
-      description: item.volumeInfo.description,
+      description: item.volumeInfo.description || "No description Avaliable",
     };
   });
 
@@ -52,6 +59,5 @@ export const fetchBooksBySearchInput = async (
     ...data,
     items: organisedBooks,
   };
-
   return organisedData;
 };
