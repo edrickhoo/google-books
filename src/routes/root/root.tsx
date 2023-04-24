@@ -1,4 +1,11 @@
-import { useEffect, useState } from "react";
+import React from "react";
+import {
+  DetailedHTMLProps,
+  InputHTMLAttributes,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
 import {
@@ -14,14 +21,17 @@ import styles from "./root.module.scss";
 
 export default function Root() {
   const queryClient = useQueryClient();
-  const [searchText, setSearchText] = useState<string>("pokemon");
+  const [searchText, setSearchText] = useState<string>("flowers");
   const [searchedText, setSearchedText] = useState<string>("");
   const [toggleMoreInfo, setToggleMoreInfo] = useState<boolean>(false);
+  const [pageIndex, setPageIndex] = useState<number>(1);
   const [selectedBook, setSelectedBook] = useState<organisedBooksData | null>(
     null
   );
   const faviourites = useSelector((state: RootState) => state.favourites.value);
   const dispatch = useAppDispatch();
+
+  const pageInput = React.useRef<HTMLInputElement>(null);
   interface sortType {
     field: keyof organisedBooksData;
     type: string;
@@ -39,13 +49,17 @@ export default function Root() {
     data: booksData,
     isRefetching,
     refetch,
-  } = useQuery("booksData", () => fetchBooksBySearchInput(searchText), {
-    enabled: false,
-  });
+  } = useQuery(
+    "booksData",
+    () => fetchBooksBySearchInput(searchText, pageIndex),
+    {
+      enabled: false,
+    }
+  );
 
   useEffect(() => {
     refetch();
-  }, [clickSearch]);
+  }, [clickSearch, pageIndex]);
 
   useEffect(() => {
     const history = localStorage.getItem("searchHistory");
@@ -68,6 +82,7 @@ export default function Root() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSearchedText(searchText);
+    setPageIndex(1);
     refetch();
     addSeachToHistory(searchText);
   };
@@ -142,6 +157,14 @@ export default function Root() {
     });
   };
 
+  const handlePageNumber = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      Number(pageInput?.current?.value) > 0 &&
+        setPageIndex(Number(pageInput?.current?.value));
+      pageInput.current!.value = "";
+    }
+  };
+
   return (
     <>
       <header>
@@ -151,6 +174,7 @@ export default function Root() {
             onChange={(e) => {
               setSearchText(e.target.value);
             }}
+            value={searchText}
           />
           <button>{isRefetching || isLoading ? "Loading.." : "Search"}</button>
         </form>
@@ -165,6 +189,7 @@ export default function Root() {
                 onClick={() => {
                   setSearchText(search);
                   setClickSearch(search);
+                  setPageIndex(1);
                 }}
                 key={index}
               >
@@ -224,6 +249,21 @@ export default function Root() {
 
           <tbody>{booksData && renderBooks()}</tbody>
         </table>
+        <div>
+          <button
+            onClick={() => pageIndex > 1 && setPageIndex((prev) => prev - 1)}
+          >
+            Prev
+          </button>
+          <input
+            ref={pageInput}
+            onKeyDown={handlePageNumber}
+            placeholder={pageIndex.toString()}
+            type="number"
+            min={1}
+          />
+          <button onClick={() => setPageIndex((prev) => prev + 1)}>Next</button>
+        </div>
         {toggleMoreInfo && selectedBook && (
           <MoreInfoModal
             book={selectedBook}

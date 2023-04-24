@@ -1,4 +1,8 @@
+import axios from "axios";
+
 const BASE_URL = "https://www.googleapis.com/books/v1/volumes";
+
+const numResults = 20;
 
 export interface booksApiResponse {
   id: string;
@@ -31,13 +35,19 @@ export interface fetchBooksBySearchInputResponse {
 }
 
 export const fetchBooksBySearchInput = async (
-  input: string
+  input: string,
+  pageIndex: number
 ): Promise<fetchBooksBySearchInputResponse> => {
   if (input === "") {
     throw new Error("Please enter something before searching");
   }
-  const res = await fetch(BASE_URL + `?q=${input || ""}`);
-  const data = await res.json();
+  const res = await axios.get(
+    BASE_URL +
+      `?q=${input || ""}&maxResults=${numResults}&startIndex=${
+        pageIndex * numResults
+      }`
+  );
+  const data = res.data;
 
   if (data.totalItems === 0) {
     throw new Error(`No books with ${input} was found`);
