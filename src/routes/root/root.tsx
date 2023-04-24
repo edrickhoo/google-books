@@ -1,11 +1,6 @@
+import { AxiosError } from "axios";
 import React from "react";
-import {
-  DetailedHTMLProps,
-  InputHTMLAttributes,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
 import {
@@ -15,7 +10,6 @@ import {
 } from "../../api/google-books-api";
 import MoreInfoModal from "../../components/MoreInfoModal/MoreInfoModal";
 import { useAppDispatch } from "../../hooks";
-import { set } from "../../redux/favourites";
 import { RootState } from "../../store";
 import styles from "./root.module.scss";
 
@@ -54,6 +48,10 @@ export default function Root() {
     () => fetchBooksBySearchInput(searchText, pageIndex),
     {
       enabled: false,
+      onError(err) {
+        err instanceof AxiosError &&
+          console.log(err.response?.data.error.message);
+      },
     }
   );
 
@@ -206,7 +204,9 @@ export default function Root() {
         >
           Searching for: {searchedText}
         </div>
-        {error instanceof Error && <div>Error: {error.message}</div>}
+        {error instanceof AxiosError && (
+          <div>Error: {error.response?.data.error.message} </div>
+        )}
         <table>
           <thead>
             <tr>
