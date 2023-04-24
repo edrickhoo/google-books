@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useSelector } from "react-redux";
 import {
   fetchBooksBySearchInput,
   fetchBooksBySearchInputResponse,
   organisedBooksData,
 } from "../../api/google-books-api";
 import MoreInfoModal from "../../components/MoreInfoModal/MoreInfoModal";
+import { useAppDispatch } from "../../hooks";
+import { set } from "../../redux/favourites";
+import { RootState } from "../../store";
 import styles from "./root.module.scss";
 
 export default function Root() {
@@ -16,7 +20,8 @@ export default function Root() {
   const [selectedBook, setSelectedBook] = useState<organisedBooksData | null>(
     null
   );
-
+  const faviourites = useSelector((state: RootState) => state.favourites.value);
+  const dispatch = useAppDispatch();
   interface sortType {
     field: keyof organisedBooksData;
     type: string;
@@ -45,6 +50,7 @@ export default function Root() {
   useEffect(() => {
     const history = localStorage.getItem("searchHistory");
     history && setRecentSearch(JSON.parse(history));
+    console.log(faviourites, " ^-^");
   }, []);
 
   const addSeachToHistory = (word: string) => {

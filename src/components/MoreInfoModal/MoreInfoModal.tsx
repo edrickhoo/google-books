@@ -1,5 +1,9 @@
+import { useDispatch, useSelector } from "react-redux";
 import { organisedBooksData } from "../../api/google-books-api";
 import styles from "./MoreInfoModal.module.scss";
+import { toggle } from "../../redux/favourites";
+import { RootState } from "../../store";
+import { useEffect } from "react";
 
 interface Props {
   book: organisedBooksData;
@@ -7,6 +11,12 @@ interface Props {
 }
 const MoreInfoModal = ({ book, closeMoreInfoModal }: Props) => {
   const { title, subtitle, authors, image, description } = book;
+  const favourites = useSelector((state: RootState) => state.favourites.value);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    console.log(favourites);
+  }, [favourites]);
   return (
     <div>
       <div
@@ -15,6 +25,13 @@ const MoreInfoModal = ({ book, closeMoreInfoModal }: Props) => {
       ></div>
       <div className={styles.ModalCard}>
         <span className={styles.Title}>{title}</span>
+        <button
+          onClick={() => {
+            dispatch(toggle(book));
+          }}
+        >
+          ^-^
+        </button>
         <span className={styles.Subtitle}>{subtitle}</span>
         <span>{Array.isArray(authors) ? authors.join(", ") : authors}</span>
         <div className={styles.ImageDescriptionContainer}>
