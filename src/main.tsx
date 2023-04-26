@@ -4,10 +4,11 @@ import App from "./App";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import ErrorPage from "./error-page";
-import Root from "./routes/root/root";
+import Root from "./routes/root/Home";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Provider } from "react-redux";
 import { store } from "./store";
+import Home from "./routes/root/Home";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,7 +21,7 @@ export const queryClient = new QueryClient({
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Root />,
+    element: <Home />,
     errorElement: <ErrorPage />,
   },
 ]);

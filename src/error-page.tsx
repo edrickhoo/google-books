@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { useRouteError } from "react-router-dom";
 
 export default function ErrorPage() {
@@ -9,9 +10,7 @@ export default function ErrorPage() {
       <h1>Oops!</h1>
       <p>Sorry, an unexpected error has occurred.</p>
       <p>
-        <i>
-          {error instanceof Error ? error.statusText || error.message : null}
-        </i>
+        <i>{error instanceof AxiosError ? 400 || error.message : null}</i>
       </p>
     </div>
   );

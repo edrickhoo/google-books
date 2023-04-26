@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import React from "react";
+import React, { useRef } from "react";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
@@ -9,12 +9,13 @@ import {
   organisedBooksData,
 } from "../../api/google-books-api";
 import MoreInfoModal from "../../components/MoreInfoModal/MoreInfoModal";
+import TableEntry from "../../components/TableEntry/TableEntry";
 import { useAppDispatch } from "../../hooks";
+import { useBooksQuery } from "../../queryHooks/booksQuery";
 import { RootState } from "../../store";
-import styles from "./root.module.scss";
+import styles from "./Home.module.scss";
 
-export default function Root() {
-  const queryClient = useQueryClient();
+export default function Home() {
   const [searchText, setSearchText] = useState<string>("flowers");
   const [searchedText, setSearchedText] = useState<string>("");
   const [toggleMoreInfo, setToggleMoreInfo] = useState<boolean>(false);
@@ -22,10 +23,6 @@ export default function Root() {
   const [selectedBook, setSelectedBook] = useState<organisedBooksData | null>(
     null
   );
-  const faviourites = useSelector((state: RootState) => state.favourites.value);
-  const dispatch = useAppDispatch();
-
-  const pageInput = React.useRef<HTMLInputElement>(null);
   interface sortType {
     field: keyof organisedBooksData;
     type: string;
@@ -37,23 +34,18 @@ export default function Root() {
   const [recentSearch, setRecentSearch] = useState<string[]>([]);
   const [clickSearch, setClickSearch] = useState("");
 
+  const faviourites = useSelector((state: RootState) => state.favourites.value);
+  const dispatch = useAppDispatch();
+
+  const pageInput = useRef<HTMLInputElement>(null);
+
   const {
     isLoading,
     error,
     data: booksData,
     isRefetching,
     refetch,
-  } = useQuery(
-    "booksData",
-    () => fetchBooksBySearchInput(searchText, pageIndex),
-    {
-      enabled: false,
-      onError(err) {
-        err instanceof AxiosError &&
-          console.log(err.response?.data.error.message);
-      },
-    }
-  );
+  } = useBooksQuery(searchText, pageIndex);
 
   useEffect(() => {
     refetch();
@@ -62,7 +54,6 @@ export default function Root() {
   useEffect(() => {
     const history = localStorage.getItem("searchHistory");
     history && setRecentSearch(JSON.parse(history));
-    console.log(faviourites, " ^-^");
   }, []);
 
   const addSeachToHistory = (word: string) => {
@@ -85,6 +76,11 @@ export default function Root() {
     addSeachToHistory(searchText);
   };
 
+  const handleOpenModal = (book: organisedBooksData) => {
+    setSelectedBook(book);
+    setToggleMoreInfo(true);
+  };
+
   const closeMoreInfoModal = () => {
     setSelectedBook(null);
     setToggleMoreInfo(false);
@@ -103,7 +99,7 @@ export default function Root() {
 
   const renderBooks = () => {
     if (booksData === undefined) {
-      return;
+      return <div>No Data found</div>;
     }
     let dataToRender: organisedBooksData[] = booksData?.items;
     if (sort.field) {
@@ -131,26 +127,11 @@ export default function Root() {
     }
     return dataToRender?.map((book: organisedBooksData, idx: number) => {
       return (
-        <tr key={book.id}>
-          <td>{book.title}</td>
-          <td>
-            {Array.isArray(book.authors)
-              ? book.authors.join(", ")
-              : book.authors}
-          </td>
-          <td>{book.publishedDate}</td>
-          <td>
-            <span
-              className={styles.Link}
-              onClick={() => {
-                setSelectedBook(book);
-                setToggleMoreInfo(true);
-              }}
-            >
-              Link
-            </span>
-          </td>
-        </tr>
+        <TableEntry
+          key={book.id}
+          book={book}
+          handleOpenModal={handleOpenModal}
+        />
       );
     });
   };
@@ -174,10 +155,11 @@ export default function Root() {
             }}
             value={searchText}
           />
-          <button>{isRefetching || isLoading ? "Loading.." : "Search"}</button>
+          <button disabled={isRefetching || isLoading}>
+            {isRefetching || isLoading ? "Loading.." : "Search"}
+          </button>
         </form>
       </header>
-      {/* book title, authors, and published date. */}
       <main>
         {recentSearch.length > 0 && (
           <div>
@@ -204,8 +186,11 @@ export default function Root() {
         >
           Searching for: {searchedText}
         </div>
+        {error ? <div>Error occured. Please try again</div> : null}
         {error instanceof AxiosError && (
-          <div>Error: {error.response?.data.error.message} </div>
+          <div>
+            Error: {error.response?.data.error.message || "Erorr has occured"}
+          </div>
         )}
         <table>
           <thead>
@@ -251,6 +236,7 @@ export default function Root() {
         </table>
         <div>
           <button
+            disabled={isRefetching}
             onClick={() => pageIndex > 1 && setPageIndex((prev) => prev - 1)}
           >
             Prev
@@ -262,7 +248,12 @@ export default function Root() {
             type="number"
             min={1}
           />
-          <button onClick={() => setPageIndex((prev) => prev + 1)}>Next</button>
+          <button
+            disabled={isRefetching}
+            onClick={() => setPageIndex((prev) => prev + 1)}
+          >
+            Next
+          </button>
         </div>
         {toggleMoreInfo && selectedBook && (
           <MoreInfoModal

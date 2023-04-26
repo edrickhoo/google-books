@@ -22,6 +22,7 @@ const MoreInfoModal = ({ book, closeMoreInfoModal }: Props) => {
       <div
         className={styles.ModalBackground}
         onClick={closeMoreInfoModal}
+        data-testid="modalBg"
       ></div>
       <div className={styles.ModalCard}>
         <span className={styles.Title}>{title}</span>

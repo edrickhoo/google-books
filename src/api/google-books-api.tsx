@@ -60,7 +60,9 @@ export const fetchBooksBySearchInput = async (
       authors: item.volumeInfo.authors,
       publishedDate: item.volumeInfo.publishedDate,
       subtitle: item.volumeInfo.subtitle,
-      image: item.volumeInfo?.imageLinks?.thumbnail,
+      image:
+        item.volumeInfo?.imageLinks?.thumbnail ||
+        "https://png.pngtree.com/png-vector/20190820/ourmid/pngtree-no-image-vector-illustration-isolated-png-image_1694547.jpg",
       description: item.volumeInfo.description || "No description Avaliable",
     };
   });
