@@ -15,6 +15,11 @@ import { useBooksQuery } from "../../queryHooks/booksQuery";
 import { RootState } from "../../store";
 import styles from "./Home.module.scss";
 
+interface sortType {
+  field: keyof organisedBooksData;
+  type: string;
+}
+
 export default function Home() {
   const [searchText, setSearchText] = useState<string>("flowers");
   const [searchedText, setSearchedText] = useState<string>("");
@@ -23,16 +28,13 @@ export default function Home() {
   const [selectedBook, setSelectedBook] = useState<organisedBooksData | null>(
     null
   );
-  interface sortType {
-    field: keyof organisedBooksData;
-    type: string;
-  }
+
   const [sort, setSort] = useState<sortType>({
     field: "title",
     type: "asc",
   });
   const [recentSearch, setRecentSearch] = useState<string[]>([]);
-  const [clickSearch, setClickSearch] = useState("");
+  const [clickSearch, setClickSearch] = useState<string>("");
 
   const faviourites = useSelector((state: RootState) => state.favourites.value);
   const dispatch = useAppDispatch();
@@ -68,11 +70,11 @@ export default function Home() {
     localStorage.setItem("searchHistory", JSON.stringify(copy));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSearchedText(searchText);
     setPageIndex(1);
-    refetch();
+    // await refetch();
     addSeachToHistory(searchText);
   };
 
@@ -97,14 +99,14 @@ export default function Home() {
     }
   };
 
-  const renderBooks = () => {
-    if (booksData === undefined) {
-      return <div>No Data found</div>;
-    }
-    let dataToRender: organisedBooksData[] = booksData?.items;
+  const sortBooks = (
+    books: fetchBooksBySearchInputResponse,
+    sort: sortType
+  ) => {
+    let dataToRender: organisedBooksData[] = [];
     if (sort.field) {
       if (sort.type === "asc") {
-        dataToRender = dataToRender?.sort((a, b) => {
+        dataToRender = books?.items?.sort((a, b) => {
           if (a[sort.field] < b[sort.field]) {
             return -1;
           }
@@ -114,7 +116,7 @@ export default function Home() {
           return 0;
         });
       } else {
-        dataToRender = dataToRender?.sort((a, b) => {
+        dataToRender = books?.items?.sort((a, b) => {
           if (a[sort.field] < b[sort.field]) {
             return 1;
           }
@@ -125,15 +127,28 @@ export default function Home() {
         });
       }
     }
-    return dataToRender?.map((book: organisedBooksData, idx: number) => {
-      return (
-        <TableEntry
-          key={book.id}
-          book={book}
-          handleOpenModal={handleOpenModal}
-        />
-      );
-    });
+    return dataToRender;
+  };
+
+  const RenderBooks = () => {
+    if (booksData === undefined) {
+      return <div>No Data found</div>;
+    }
+    let dataToRender: organisedBooksData[] = sortBooks(booksData, sort);
+
+    return (
+      <>
+        {dataToRender?.map((book: organisedBooksData, idx: number) => {
+          return (
+            <TableEntry
+              key={book.id}
+              book={book}
+              handleOpenModal={handleOpenModal}
+            />
+          );
+        })}
+      </>
+    );
   };
 
   const handlePageNumber = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -149,13 +164,14 @@ export default function Home() {
       <header>
         <form onSubmit={handleSubmit}>
           <input
+            data-testid="searchInput"
             type="text"
             onChange={(e) => {
               setSearchText(e.target.value);
             }}
             value={searchText}
           />
-          <button disabled={isRefetching || isLoading}>
+          <button data-testid="searchBtn" disabled={isRefetching || isLoading}>
             {isRefetching || isLoading ? "Loading.." : "Search"}
           </button>
         </form>
@@ -163,7 +179,7 @@ export default function Home() {
       <main>
         {recentSearch.length > 0 && (
           <div>
-            <span>Recent: Searches</span>
+            <span>Recent Searches:</span>
             {recentSearch.map((search, index) => (
               <div
                 onClick={() => {
@@ -232,16 +248,18 @@ export default function Home() {
             </tr>
           </thead>
 
-          <tbody>{booksData && renderBooks()}</tbody>
+          <tbody>{booksData && <RenderBooks />}</tbody>
         </table>
         <div>
           <button
+            data-testid="prevBtn"
             disabled={isRefetching}
             onClick={() => pageIndex > 1 && setPageIndex((prev) => prev - 1)}
           >
             Prev
           </button>
           <input
+            data-testid="pageInput"
             ref={pageInput}
             onKeyDown={handlePageNumber}
             placeholder={pageIndex.toString()}
@@ -249,6 +267,7 @@ export default function Home() {
             min={1}
           />
           <button
+            data-testid="nextBtn"
             disabled={isRefetching}
             onClick={() => setPageIndex((prev) => prev + 1)}
           >
