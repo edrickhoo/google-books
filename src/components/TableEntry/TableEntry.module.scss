@@ -1,0 +1,14 @@
+.Icon {
+  margin-right: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &Active {
+    color: red;
+  }
+}
+
+.TableData {
+  display: flex;
+}

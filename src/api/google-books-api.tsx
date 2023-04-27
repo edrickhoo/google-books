@@ -1,4 +1,6 @@
 import axios from "axios";
+import { Params } from "react-router-dom";
+import DOMPurify from "dompurify";
 
 const BASE_URL = "https://www.googleapis.com/books/v1/volumes";
 
@@ -63,7 +65,10 @@ export const fetchBooksBySearchInput = async (
       image:
         item.volumeInfo?.imageLinks?.thumbnail ||
         "https://png.pngtree.com/png-vector/20190820/ourmid/pngtree-no-image-vector-illustration-isolated-png-image_1694547.jpg",
-      description: item.volumeInfo.description || "No description Avaliable",
+      description:
+        (item.volumeInfo.description &&
+          DOMPurify.sanitize(item.volumeInfo.description)) ||
+        "No description Avaliable",
     };
   });
 
@@ -72,4 +77,29 @@ export const fetchBooksBySearchInput = async (
     items: organisedBooks,
   };
   return organisedData;
+};
+
+export const fetchSingleBookById = async (id: string | undefined) => {
+  const res = await axios.get(`${BASE_URL}/${id}`);
+  const data = res.data;
+
+  if (data.code === 503) {
+    throw new Error(`No books with ${id} was found`);
+  }
+  const book = {
+    id: data?.id,
+    title: data?.volumeInfo.title,
+    authors: data?.volumeInfo.authors,
+    publishedDate: data?.volumeInfo.publishedDate,
+    subtitle: data?.volumeInfo.subtitle,
+    image:
+      data?.volumeInfo?.imageLinks?.thumbnail ||
+      "https://png.pngtree.com/png-vector/20190820/ourmid/pngtree-no-image-vector-illustration-isolated-png-image_1694547.jpg",
+    description:
+      (data?.volumeInfo.description &&
+        DOMPurify.sanitize(data?.volumeInfo.description)) ||
+      "No description Avaliable",
+  };
+
+  return book;
 };

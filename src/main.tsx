@@ -9,6 +9,10 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import Home from "./routes/root/Home";
+import FavouritesPage from "./routes/favourites/FavouritesPage";
+import SingleReview from "./routes/reviews/id/SingleReview";
+import NavBar from "./components/NavBar/NavBar";
+import ReviewsPage from "./routes/reviews/ReviewsPage";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,6 +26,21 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "favourites",
+    element: <FavouritesPage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "review/:id",
+    element: <SingleReview />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "reviews",
+    element: <ReviewsPage />,
     errorElement: <ErrorPage />,
   },
 ]);

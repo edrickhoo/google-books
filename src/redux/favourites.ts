@@ -21,9 +21,10 @@ export const faviouritesSlice = createSlice({
       );
       if (filtered.length !== state.value.length) {
         state.value = filtered;
-        return;
+      } else {
+        state.value = [...state.value, action.payload];
       }
-      state.value = [...state.value, action.payload];
+
       localStorage.setItem("favourites", JSON.stringify(state.value));
     },
 

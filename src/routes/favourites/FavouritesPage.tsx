@@ -14,21 +14,23 @@ import TableEntry from "../../components/TableEntry/TableEntry";
 import { useAppDispatch } from "../../hooks";
 import { useBooksQuery } from "../../queryHooks/booksQuery";
 import { RootState } from "../../store";
-import styles from "./Home.module.scss";
+import styles from "../root/Home.module.scss";
 
 interface sortType {
   field: keyof organisedBooksData;
   type: string;
 }
 
-export default function Home() {
+export default function Favouritespage() {
   const [searchText, setSearchText] = useState<string>("flowers");
   const [searchedText, setSearchedText] = useState<string>("");
   const [toggleMoreInfo, setToggleMoreInfo] = useState<boolean>(false);
   const [pageIndex, setPageIndex] = useState<number>(1);
+  const [booksData, setBooksData] = useState<organisedBooksData[]>([]);
   const [selectedBook, setSelectedBook] = useState<organisedBooksData | null>(
     null
   );
+  const [searchLoading, setSearchLoading] = useState<boolean>(false);
 
   const [sort, setSort] = useState<sortType>({
     field: "title",
@@ -42,41 +44,53 @@ export default function Home() {
 
   const pageInput = useRef<HTMLInputElement>(null);
 
-  const {
-    isLoading,
-    error,
-    data: booksData,
-    isRefetching,
-    refetch,
-  } = useBooksQuery(searchText, pageIndex);
-
-  useEffect(() => {
-    refetch();
-  }, [clickSearch, pageIndex]);
-
   useEffect(() => {
     const history = localStorage.getItem("searchHistory");
     history && setRecentSearch(JSON.parse(history));
   }, []);
 
+  useEffect(() => {
+    faviourites && setBooksData(faviourites);
+  }, [faviourites]);
+
+  useEffect(() => {
+    setBooksData(
+      faviourites.slice((pageIndex - 1) * 10, (pageIndex - 1) * 20 + 10)
+    );
+  }, [pageIndex]);
+
   const addSeachToHistory = (word: string) => {
-    let copy = [...recentSearch];
-    if (copy.length > 4) {
-      copy.pop();
-      copy.unshift(word);
-    } else {
-      copy.unshift(word);
+    if (word !== "") {
+      let copy = [...recentSearch];
+      if (copy.length > 4) {
+        copy.pop();
+        copy.unshift(word);
+      } else {
+        copy.unshift(word);
+      }
+      setRecentSearch(copy);
+      localStorage.setItem("searchHistory", JSON.stringify(copy));
     }
-    setRecentSearch(copy);
-    localStorage.setItem("searchHistory", JSON.stringify(copy));
+  };
+
+  const searchFavourites = (searchText: string) => {
+    setBooksData(
+      faviourites
+        .filter(
+          (item) =>
+            item?.title?.toLowerCase().includes(searchText.toLowerCase()) ||
+            item?.subtitle?.toLowerCase().includes(searchText.toLowerCase())
+        )
+        .slice((pageIndex - 1) * 20, (pageIndex - 1) * 20 + 10)
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSearchedText(searchText);
     setPageIndex(1);
-    await refetch();
     addSeachToHistory(searchText);
+    searchFavourites(searchText);
   };
 
   const handleOpenModal = (book: organisedBooksData) => {
@@ -100,14 +114,12 @@ export default function Home() {
     }
   };
 
-  const sortBooks = (
-    books: fetchBooksBySearchInputResponse,
-    sort: sortType
-  ) => {
+  const sortBooks = (books: organisedBooksData[], sort: sortType) => {
     let dataToRender: organisedBooksData[] = [];
+    let copy = [...books];
     if (sort.field) {
       if (sort.type === "asc") {
-        dataToRender = books?.items?.sort((a, b) => {
+        dataToRender = copy?.sort((a, b) => {
           if (a[sort.field] < b[sort.field]) {
             return -1;
           }
@@ -117,7 +129,7 @@ export default function Home() {
           return 0;
         });
       } else {
-        dataToRender = books?.items?.sort((a, b) => {
+        dataToRender = copy?.sort((a, b) => {
           if (a[sort.field] < b[sort.field]) {
             return 1;
           }
@@ -173,8 +185,8 @@ export default function Home() {
             }}
             value={searchText}
           />
-          <button data-testid="searchBtn" disabled={isRefetching || isLoading}>
-            {isRefetching || isLoading ? "Loading.." : "Search"}
+          <button data-testid="searchBtn" disabled={searchLoading}>
+            {searchLoading ? "Loading.." : "Search"}
           </button>
         </form>
       </header>
@@ -186,7 +198,7 @@ export default function Home() {
               <div
                 onClick={() => {
                   setSearchText(search);
-                  setClickSearch(search);
+                  searchFavourites(search);
                   setPageIndex(1);
                 }}
                 key={index}
@@ -204,12 +216,6 @@ export default function Home() {
         >
           Searching for: {searchedText}
         </div>
-        {error ? <div>Error occured. Please try again</div> : null}
-        {error instanceof AxiosError && (
-          <div>
-            Error: {error.response?.data.error.message || "Erorr has occured"}
-          </div>
-        )}
         <table>
           <thead>
             <tr>
@@ -251,12 +257,16 @@ export default function Home() {
             </tr>
           </thead>
 
-          <tbody>{booksData && <RenderBooks />}</tbody>
+          <tbody>{booksData && booksData.length > 0 && <RenderBooks />}</tbody>
         </table>
+        {!booksData && <div>No books currently favourited</div>}
+        {booksData && booksData.length < 1 && (
+          <div>No more faviourited books</div>
+        )}
         <div>
           <button
             data-testid="prevBtn"
-            disabled={isRefetching}
+            disabled={searchLoading}
             onClick={() => pageIndex > 1 && setPageIndex((prev) => prev - 1)}
           >
             Prev
@@ -271,7 +281,7 @@ export default function Home() {
           />
           <button
             data-testid="nextBtn"
-            disabled={isRefetching}
+            disabled={searchLoading}
             onClick={() => setPageIndex((prev) => prev + 1)}
           >
             Next

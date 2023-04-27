@@ -27,8 +27,6 @@ describe("MoreInfoModal Component Tests", () => {
         />
       </Provider>
     );
-    screen.logTestingPlaygroundURL();
-    console.log("yooo");
     expect(screen.getByText(/bob/i)).toBeInTheDocument;
     expect(screen.getByText(/Potter/i)).toBeInTheDocument();
     expect(screen.getByText("Stone")).toBeInTheDocument();

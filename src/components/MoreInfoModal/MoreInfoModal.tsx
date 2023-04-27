@@ -40,7 +40,10 @@ const MoreInfoModal = ({ book, closeMoreInfoModal }: Props) => {
             <img className={styles.Image} src={image} alt="" />
           </div>
           <div>
-            <p className={styles.Description}>{description}</p>
+            <p
+              dangerouslySetInnerHTML={{ __html: description }}
+              className={styles.Description}
+            ></p>
           </div>
         </div>
       </div>
