@@ -4,6 +4,7 @@ import styles from "./MoreInfoModal.module.scss";
 import { toggle } from "../../redux/favourites";
 import { RootState } from "../../store";
 import { useEffect } from "react";
+import { AiOutlineClose } from "react-icons/ai";
 
 interface Props {
   book: organisedBooksData;
@@ -12,7 +13,6 @@ interface Props {
 const MoreInfoModal = ({ book, closeMoreInfoModal }: Props) => {
   const { title, subtitle, authors, image, description } = book;
   const favourites = useSelector((state: RootState) => state.favourites.value);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     console.log(favourites);
@@ -23,16 +23,11 @@ const MoreInfoModal = ({ book, closeMoreInfoModal }: Props) => {
         className={styles.ModalBackground}
         onClick={closeMoreInfoModal}
         data-testid="modalBg"
-      ></div>
+      >
+        <AiOutlineClose size={25} className={styles.CloseIcon} />
+      </div>
       <div className={styles.ModalCard}>
         <span className={styles.Title}>{title}</span>
-        <button
-          onClick={() => {
-            dispatch(toggle(book));
-          }}
-        >
-          ^-^
-        </button>
         <span className={styles.Subtitle}>{subtitle}</span>
         <span>{Array.isArray(authors) ? authors.join(", ") : authors}</span>
         <div className={styles.ImageDescriptionContainer}>

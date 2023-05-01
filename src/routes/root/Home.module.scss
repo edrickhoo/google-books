@@ -1,5 +1,14 @@
+@import "../../mixins/mixins.scss";
+@import "../../mixins/palette/palette.scss";
 .SearchingText {
   padding: 10px;
+}
+
+.PageContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 0 40px;
 }
 
 .SearchingTextOff {
@@ -20,4 +29,87 @@
   content: "▼";
   margin-left: 5px;
   cursor: pointer;
+}
+
+.SearchContainer {
+  @include container;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.SearchBtn {
+  padding: 3px;
+}
+
+.PrimaryBtn {
+  &:hover {
+    color: $Color-Primary;
+  }
+}
+.SearchInput {
+  font-size: 14px;
+  padding: 3px 6px;
+}
+
+.RecentSearchContainer {
+  margin-top: 5px;
+}
+.RecentSearch {
+  cursor: pointer;
+  max-width: 370px;
+  overflow-x: hidden;
+
+  &:hover {
+    color: $Color-Primary;
+  }
+}
+
+.MainContainer {
+  @include container;
+  flex: 1;
+  width: 100%;
+}
+
+.TableContainer {
+  max-width: 1280px;
+  min-height: 400px;
+  overflow-x: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.Table {
+  min-width: 1278px;
+  text-align: center;
+  border: 1px solid gray;
+  & > tbody > tr:nth-child(even) {
+    background-color: #1d1b1b;
+  }
+}
+
+.PageNavContainer {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.PageNumInput {
+  width: 2rem;
+  text-align: center;
+}
+
+.DisplayText {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+@media screen and (min-width: 768px) {
+  .SearchContainer {
+    align-items: flex-start;
+  }
 }

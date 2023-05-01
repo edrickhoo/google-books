@@ -1,20 +1,14 @@
-import { AxiosError } from "axios";
 import React, { useRef } from "react";
 import { useEffect, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
-import {
-  fetchBooksBySearchInput,
-  fetchBooksBySearchInputResponse,
-  organisedBooksData,
-} from "../../api/google-books-api";
+import { organisedBooksData } from "../../api/google-books-api";
 import MoreInfoModal from "../../components/MoreInfoModal/MoreInfoModal";
 import NavBar from "../../components/NavBar/NavBar";
 import TableEntry from "../../components/TableEntry/TableEntry";
 import { useAppDispatch } from "../../hooks";
-import { useBooksQuery } from "../../queryHooks/booksQuery";
 import { RootState } from "../../store";
 import styles from "../root/Home.module.scss";
+import Footer from "../../components/Footer/Footer";
 
 interface sortType {
   field: keyof organisedBooksData;
@@ -186,11 +180,12 @@ export default function Favouritespage() {
   };
 
   return (
-    <>
+    <div className={styles.PageContainer}>
       <NavBar />
-      <header>
+      <div className={styles.SearchContainer}>
         <form onSubmit={handleSubmit}>
           <input
+            className={styles.SearchInput}
             data-testid="searchInput"
             type="text"
             onChange={(e) => {
@@ -198,17 +193,20 @@ export default function Favouritespage() {
             }}
             value={searchText}
           />
-          <button data-testid="searchBtn" disabled={searchLoading}>
+          <button
+            className={`${styles.PrimaryBtn} ${styles.SearchBtn}`}
+            data-testid="searchBtn"
+            disabled={searchLoading}
+          >
             {searchLoading ? "Loading.." : "Search"}
           </button>
         </form>
-      </header>
-      <main>
         {recentSearch.length > 0 && (
-          <div>
+          <div className={styles.RecentSearchContainer}>
             <span>Recent Searches:</span>
             {recentSearch.map((search, index) => (
               <div
+                className={styles.RecentSearch}
                 onClick={() => {
                   setSearchText(search);
                   searchFavourites(search);
@@ -221,7 +219,8 @@ export default function Favouritespage() {
             ))}
           </div>
         )}
-
+      </div>
+      <main className={styles.MainContainer}>
         <div
           className={`${styles.SearchingText} ${
             !searchedText && styles.SearchingTextOff
@@ -229,53 +228,62 @@ export default function Favouritespage() {
         >
           Searching for: {searchedText}
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th
-                className={`${
-                  sort.field === "title" &&
-                  (sort.type === "asc"
-                    ? styles.SortActiveAsc
-                    : styles.SortActiveDesc)
-                }`}
-                onClick={() => toggleSort("title")}
-              >
-                Title
-              </th>
-              <th
-                className={`${
-                  sort.field === "authors" &&
-                  (sort.type === "asc"
-                    ? styles.SortActiveAsc
-                    : styles.SortActiveDesc)
-                }`}
-                onClick={() => toggleSort("authors")}
-              >
-                Authors
-              </th>
-              <th
-                className={`${
-                  sort.field === "publishedDate" &&
-                  (sort.type === "asc"
-                    ? styles.SortActiveAsc
-                    : styles.SortActiveDesc)
-                }`}
-                onClick={() => toggleSort("publishedDate")}
-              >
-                Published Date
-              </th>
-              <th>More Details</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+        <div className={styles.DisplayText}>Displaying - 10 </div>
+        <div className={styles.TableContainer}>
+          <table className={styles.Table}>
+            <thead>
+              <tr>
+                <th
+                  className={`${
+                    sort.field === "title" &&
+                    (sort.type === "asc"
+                      ? styles.SortActiveAsc
+                      : styles.SortActiveDesc)
+                  }`}
+                  onClick={() => toggleSort("title")}
+                >
+                  Title
+                </th>
+                <th
+                  className={`${
+                    sort.field === "authors" &&
+                    (sort.type === "asc"
+                      ? styles.SortActiveAsc
+                      : styles.SortActiveDesc)
+                  }`}
+                  onClick={() => toggleSort("authors")}
+                >
+                  Authors
+                </th>
+                <th
+                  className={`${
+                    sort.field === "publishedDate" &&
+                    (sort.type === "asc"
+                      ? styles.SortActiveAsc
+                      : styles.SortActiveDesc)
+                  }`}
+                  onClick={() => toggleSort("publishedDate")}
+                >
+                  Published Date
+                </th>
+                <th>More Details</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
 
-          <tbody>{booksData && booksData.length > 0 && <RenderBooks />}</tbody>
-        </table>
-        {!booksData && <div>No books currently reviewed</div>}
-        {booksData && booksData.length < 1 && <div>No more reviewed books</div>}
-        <div>
+            <tbody>
+              {!booksData && <td>No books currently reviewed</td>}
+              {booksData && booksData.length < 1 && (
+                <td>No more reviewed books</td>
+              )}
+              {booksData && booksData.length > 0 && <RenderBooks />}
+            </tbody>
+          </table>
+        </div>
+
+        <div className={styles.PageNavContainer}>
           <button
+            className={styles.PrimaryBtn}
             data-testid="prevBtn"
             disabled={searchLoading}
             onClick={() => pageIndex > 1 && setPageIndex((prev) => prev - 1)}
@@ -283,6 +291,7 @@ export default function Favouritespage() {
             Prev
           </button>
           <input
+            className={styles.PageNumInput}
             data-testid="pageInput"
             ref={pageInput}
             onKeyDown={handlePageNumber}
@@ -291,6 +300,7 @@ export default function Favouritespage() {
             min={1}
           />
           <button
+            className={styles.PrimaryBtn}
             data-testid="nextBtn"
             disabled={searchLoading}
             onClick={() => setPageIndex((prev) => prev + 1)}
@@ -305,6 +315,7 @@ export default function Favouritespage() {
           />
         )}
       </main>
-    </>
+      <Footer />
+    </div>
   );
 }

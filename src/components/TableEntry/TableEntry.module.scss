@@ -1,3 +1,5 @@
+@import "../../mixins/palette/palette.scss";
+
 .Icon {
   margin-right: 2px;
   display: flex;
@@ -11,4 +13,27 @@
 
 .TableData {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 26px;
+}
+
+.MoreDetails {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    color: $Color-Primary;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .Title {
+    text-align: left;
+  }
+
+  .Authors {
+    text-align: left;
+  }
 }

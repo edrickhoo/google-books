@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
 import { organisedBooksData } from "../../api/google-books-api";
 import { BsBookmarkHeart } from "react-icons/bs";
 import { MdRateReview } from "react-icons/md";
+import { BiDetail } from "react-icons/bi";
 import { useAppDispatch } from "../../hooks";
 import { toggle } from "../../redux/favourites";
 import { useSelector } from "react-redux";
@@ -21,18 +21,19 @@ const TableEntry = ({ book, handleOpenModal }: Props) => {
 
   return (
     <tr key={book.id}>
-      <td>{book.title}</td>
-      <td>
+      <td className={styles.Title}>{book.title}</td>
+      <td className={styles.Authors}>
         {Array.isArray(book.authors) ? book.authors.join(", ") : book.authors}
       </td>
       <td>{book.publishedDate}</td>
       <td>
         <span
+          className={styles.MoreDetails}
           onClick={() => {
             handleOpenModal(book);
           }}
         >
-          Link
+          <BiDetail size={24} />
         </span>
       </td>
       <td className={styles.TableData}>
@@ -42,7 +43,7 @@ const TableEntry = ({ book, handleOpenModal }: Props) => {
           }`}
           onClick={() => dispatch(toggle(book))}
         >
-          <BsBookmarkHeart />
+          <BsBookmarkHeart size={16} />
         </button>
         <button
           onClick={() => navigate(`/review/${book.id}`)}
@@ -51,7 +52,7 @@ const TableEntry = ({ book, handleOpenModal }: Props) => {
             styles.IconActive
           }`}
         >
-          <MdRateReview />
+          <MdRateReview size={16} />
         </button>
       </td>
     </tr>

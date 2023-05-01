@@ -12,6 +12,7 @@ import { RootState } from "../../../store";
 import styles from "./SingleReview.module.scss";
 import { save } from "../../../redux/reviews";
 import NavBar from "../../../components/NavBar/NavBar";
+import Footer from "../../../components/Footer/Footer";
 
 export interface FormType {
   id: string;
@@ -50,6 +51,10 @@ const SingleReview = () => {
     console.log(formObj);
   }, [reviews]);
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   if (!data) {
     return <div>No book was found</div>;
   }
@@ -62,36 +67,31 @@ const SingleReview = () => {
   };
 
   return (
-    <div>
+    <div className={styles.PageContainer}>
       <NavBar />
-      <div>
-        <div>
-          <div className={styles.Card}>
-            <span className={styles.Title}>{title}</span>
-            <button
-              onClick={() => {
-                dispatch(toggle(data));
-              }}
-            >
-              ^-^
-            </button>
-            <span className={styles.Subtitle}>{subtitle}</span>
-            <span>{Array.isArray(authors) ? authors.join(", ") : authors}</span>
-            <div className={styles.ImageDescriptionContainer}>
-              <div>
-                <img className={styles.Image} src={image} alt="" />
-              </div>
-              <div>
-                <p
-                  dangerouslySetInnerHTML={{ __html: description }}
-                  className={styles.Description}
-                ></p>
-              </div>
+      <main className={styles.MainContainer}>
+        <div className={styles.Card}>
+          <span className={styles.Title}>{title}</span>
+          <span className={styles.Subtitle}>{subtitle}</span>
+          <span>{Array.isArray(authors) ? authors.join(", ") : authors}</span>
+          <div className={styles.ImageDescriptionContainer}>
+            <div>
+              <img className={styles.Image} src={image} alt="" />
+            </div>
+            <div>
+              <p
+                dangerouslySetInnerHTML={{ __html: description }}
+                className={styles.Description}
+              ></p>
             </div>
           </div>
-          <form onSubmit={handleSubmit}>
-            <span>Write your review</span>
+        </div>
+        <form onSubmit={handleSubmit} className={styles.Form}>
+          <span className={styles.ReviewTitle}>Write your review</span>
+          <div>
+            <span>Select Rating - </span>
             <select
+              className={styles.FormRatingInput}
               value={formObj.rating ? formObj.rating : ""}
               name="rating"
               onChange={(e) =>
@@ -106,19 +106,20 @@ const SingleReview = () => {
               <option value="4">4</option>
               <option value="5">5</option>
             </select>
-            <textarea
-              value={formObj.text}
-              onChange={(e) => setFormObj({ ...formObj, text: e.target.value })}
-              name="text"
-              cols={30}
-              rows={10}
-              placeholder="Write your thoughts about the book"
-            ></textarea>
-
-            <button>Save</button>
-          </form>
-        </div>
-      </div>
+          </div>
+          <textarea
+            className={styles.FormTextInput}
+            value={formObj.text}
+            onChange={(e) => setFormObj({ ...formObj, text: e.target.value })}
+            name="text"
+            cols={30}
+            rows={10}
+            placeholder="Write your thoughts about the book"
+          ></textarea>
+          <button className={styles.SaveBtn}>Save</button>
+        </form>
+      </main>
+      <Footer />
     </div>
   );
 };

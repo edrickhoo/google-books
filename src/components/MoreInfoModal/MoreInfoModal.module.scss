@@ -1,6 +1,6 @@
 .ModalBackground {
   background-color: rgba(0, 0, 0, 0.3);
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   z-index: 1;
@@ -8,9 +8,16 @@
   width: 100%;
 }
 
+.CloseIcon {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+}
+
 .ModalCard {
   background-color: rgba(0, 0, 0, 1);
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -18,11 +25,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px;
+  padding: 15px;
 }
 
 .ImageDescriptionContainer {
   display: flex;
+  flex-direction: column;
   align-items: center;
 }
 
@@ -32,8 +40,8 @@
 }
 
 .Description {
-  width: 350px;
-  height: 400px;
+  width: 280px;
+  height: 300px;
   overflow-y: auto;
 }
 
@@ -45,4 +53,21 @@
 .Subtitle {
   font-size: 18px;
   font-weight: 600;
+}
+
+@media screen and (min-width: 768px) {
+  .ImageDescriptionContainer {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .ModalCard {
+    padding: 30px;
+  }
+
+  .Description {
+    width: 350px;
+    height: 400px;
+  }
 }

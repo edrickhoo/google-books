@@ -1,0 +1,23 @@
+@import "../../mixins/palette/palette.scss";
+.Footer {
+  padding: 30px 30px 15px 30px;
+  color: $Color-Primary-light;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  word-wrap: normal;
+  border-top: 2px solid darkgrey;
+  margin-top: 20px;
+}
+.Name {
+  min-width: fit-content;
+  font-weight: 500;
+  margin: 0 15px;
+}
+
+.Line {
+  width: 100%;
+  max-width: 500px;
+
+  border: 1px solid $Color-Primary-lightest;
+}
