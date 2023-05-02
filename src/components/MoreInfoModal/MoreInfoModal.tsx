@@ -30,8 +30,8 @@ const MoreInfoModal = ({ book, closeMoreInfoModal }: Props) => {
         <span className={styles.Title}>{title}</span>
         <span className={styles.Subtitle}>{subtitle}</span>
         <span>{Array.isArray(authors) ? authors.join(", ") : authors}</span>
-        <div className={styles.ImageDescriptionContainer}>
-          <div>
+        <div>
+          <div className={styles.ImageContainer}>
             <img className={styles.Image} src={image} alt="" />
           </div>
           <div>
