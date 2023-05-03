@@ -162,140 +162,140 @@ export default function Home() {
   return (
     <div className={styles.PageContainer}>
       <NavBar />
-      <div>
-        <div className={styles.SearchContainer}>
-          <form onSubmit={handleSubmit}>
-            <input
-              className={styles.SearchInput}
-              data-testid="searchInput"
-              type="text"
-              onChange={(e) => {
-                setSearchText(e.target.value);
-              }}
-              value={searchText}
-            />
-            <button
-              className={`${styles.PrimaryBtn} ${styles.SearchBtn}`}
-              data-testid="searchBtn"
-              disabled={isRefetching || isLoading}
-            >
-              {isRefetching || isLoading ? "Loading.." : "Search"}
-            </button>
-          </form>
-          {recentSearch.length > 0 && (
-            <div className={styles.RecentSearchContainer}>
-              <span>Recent Searches:</span>
-              {recentSearch.map((search, index) => (
-                <div
-                  title={search}
-                  className={styles.RecentSearch}
-                  onClick={() => {
-                    setSearchText(search);
-                    setClickSearch(search);
-                    setPageIndex(1);
-                  }}
-                  key={index}
-                >
-                  {search}
-                </div>
-              ))}
+      <main className={styles.MainContainer}>
+        <div className={styles.Wrapper}>
+          <div className={styles.SearchContainer}>
+            <form onSubmit={handleSubmit}>
+              <input
+                className={styles.SearchInput}
+                data-testid="searchInput"
+                type="text"
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                }}
+                value={searchText}
+              />
+              <button
+                className={`${styles.PrimaryBtn} ${styles.SearchBtn}`}
+                data-testid="searchBtn"
+                disabled={isRefetching || isLoading}
+              >
+                {isRefetching || isLoading ? "Loading.." : "Search"}
+              </button>
+            </form>
+            {recentSearch.length > 0 && (
+              <div className={styles.RecentSearchContainer}>
+                <span>Recent Searches:</span>
+                {recentSearch.map((search, index) => (
+                  <div
+                    title={search}
+                    className={styles.RecentSearch}
+                    onClick={() => {
+                      setSearchText(search);
+                      setClickSearch(search);
+                      setPageIndex(1);
+                    }}
+                    key={index}
+                  >
+                    {search}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div
+            className={`${styles.SearchingText} ${
+              !searchedText && styles.SearchingTextOff
+            }`}
+          >
+            Searching for: {searchedText}
+          </div>
+          {error ? <div>Error occured. Please try again</div> : null}
+          {error instanceof AxiosError && (
+            <div>
+              Error: {error.response?.data.error.message || "Erorr has occured"}
             </div>
           )}
-        </div>
-      </div>
-      <main className={styles.MainContainer}>
-        <div
-          className={`${styles.SearchingText} ${
-            !searchedText && styles.SearchingTextOff
-          }`}
-        >
-          Searching for: {searchedText}
-        </div>
-        {error ? <div>Error occured. Please try again</div> : null}
-        {error instanceof AxiosError && (
-          <div>
-            Error: {error.response?.data.error.message || "Erorr has occured"}
-          </div>
-        )}
-        <div className={styles.DisplayText}>Displaying - 20 </div>
-        <div className={styles.TableContainer}>
-          <table className={styles.Table}>
-            <thead>
-              <tr>
-                <th
-                  className={`${
-                    sort.field === "title" &&
-                    (sort.type === "asc"
-                      ? styles.SortActiveAsc
-                      : styles.SortActiveDesc)
-                  }`}
-                  onClick={() => toggleSort("title")}
-                >
-                  Title
-                </th>
-                <th
-                  className={`${
-                    sort.field === "authors" &&
-                    (sort.type === "asc"
-                      ? styles.SortActiveAsc
-                      : styles.SortActiveDesc)
-                  }`}
-                  onClick={() => toggleSort("authors")}
-                >
-                  Authors
-                </th>
-                <th
-                  className={`${
-                    sort.field === "publishedDate" &&
-                    (sort.type === "asc"
-                      ? styles.SortActiveAsc
-                      : styles.SortActiveDesc)
-                  }`}
-                  onClick={() => toggleSort("publishedDate")}
-                >
-                  Published Date
-                </th>
-                <th>Details</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
+          <div className={styles.DisplayText}>Displaying - 20 </div>
+          <div className={styles.TableContainer}>
+            <table className={styles.Table}>
+              <thead>
+                <tr>
+                  <th
+                    className={`${
+                      sort.field === "title" &&
+                      (sort.type === "asc"
+                        ? styles.SortActiveAsc
+                        : styles.SortActiveDesc)
+                    }`}
+                    onClick={() => toggleSort("title")}
+                  >
+                    Title
+                  </th>
+                  <th
+                    className={`${
+                      sort.field === "authors" &&
+                      (sort.type === "asc"
+                        ? styles.SortActiveAsc
+                        : styles.SortActiveDesc)
+                    }`}
+                    onClick={() => toggleSort("authors")}
+                  >
+                    Authors
+                  </th>
+                  <th
+                    className={`${
+                      sort.field === "publishedDate" &&
+                      (sort.type === "asc"
+                        ? styles.SortActiveAsc
+                        : styles.SortActiveDesc)
+                    }`}
+                    onClick={() => toggleSort("publishedDate")}
+                  >
+                    Published Date
+                  </th>
+                  <th>Details</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
 
-            <tbody>{booksData && <RenderBooks />}</tbody>
-          </table>
+              <tbody>{booksData && <RenderBooks />}</tbody>
+            </table>
+          </div>
+          <div className={styles.PageNavContainer}>
+            <button
+              className={styles.PrimaryBtn}
+              data-testid="prevBtn"
+              disabled={isRefetching}
+              onClick={() => pageIndex > 1 && setPageIndex((prev) => prev - 1)}
+            >
+              Prev
+            </button>
+            <input
+              className={styles.PageNumInput}
+              data-testid="pageInput"
+              ref={pageInput}
+              onKeyDown={handlePageNumber}
+              placeholder={pageIndex.toString()}
+              type="number"
+              min={1}
+            />
+            <button
+              className={styles.PrimaryBtn}
+              data-testid="nextBtn"
+              disabled={isRefetching}
+              onClick={() => setPageIndex((prev) => prev + 1)}
+            >
+              Next
+            </button>
+          </div>
+          {toggleMoreInfo && selectedBook && (
+            <MoreInfoModal
+              book={selectedBook}
+              closeMoreInfoModal={closeMoreInfoModal}
+            />
+          )}
         </div>
-        <div className={styles.PageNavContainer}>
-          <button
-            className={styles.PrimaryBtn}
-            data-testid="prevBtn"
-            disabled={isRefetching}
-            onClick={() => pageIndex > 1 && setPageIndex((prev) => prev - 1)}
-          >
-            Prev
-          </button>
-          <input
-            className={styles.PageNumInput}
-            data-testid="pageInput"
-            ref={pageInput}
-            onKeyDown={handlePageNumber}
-            placeholder={pageIndex.toString()}
-            type="number"
-            min={1}
-          />
-          <button
-            className={styles.PrimaryBtn}
-            data-testid="nextBtn"
-            disabled={isRefetching}
-            onClick={() => setPageIndex((prev) => prev + 1)}
-          >
-            Next
-          </button>
-        </div>
-        {toggleMoreInfo && selectedBook && (
-          <MoreInfoModal
-            book={selectedBook}
-            closeMoreInfoModal={closeMoreInfoModal}
-          />
-        )}
       </main>
       <Footer />
     </div>

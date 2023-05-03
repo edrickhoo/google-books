@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Params } from "react-router-dom";
 import DOMPurify from "dompurify";
 
 const BASE_URL = "https://www.googleapis.com/books/v1/volumes";

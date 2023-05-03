@@ -16,7 +16,7 @@ interface sortType {
 }
 
 export default function Favouritespage() {
-  const [searchText, setSearchText] = useState<string>("flowers");
+  const [searchText, setSearchText] = useState<string>("");
   const [searchedText, setSearchedText] = useState<string>("");
   const [toggleMoreInfo, setToggleMoreInfo] = useState<boolean>(false);
   const [pageIndex, setPageIndex] = useState<number>(1);
@@ -31,7 +31,6 @@ export default function Favouritespage() {
     type: "asc",
   });
   const [recentSearch, setRecentSearch] = useState<string[]>([]);
-  const [clickSearch, setClickSearch] = useState<string>("");
   const [reviewBooks, setReviewBooks] = useState<organisedBooksData[]>([]);
 
   const reviews = useSelector((state: RootState) => state.reviews.value);
@@ -55,14 +54,15 @@ export default function Favouritespage() {
         return acc;
       }, []);
 
-    console.log(reviewBooks);
     setReviewBooks(reviewBooks);
     setBooksData(reviewBooks);
   }, [reviews]);
 
   useEffect(() => {
+    let searchTextFiletered = filterBySearchText(reviewBooks);
+    setSearchedText(searchText);
     setBooksData(
-      reviewBooks.slice((pageIndex - 1) * 20, (pageIndex - 1) * 20 + 10)
+      searchTextFiletered.slice((pageIndex - 1) * 10, (pageIndex - 1) * 10 + 10)
     );
   }, [pageIndex, reviewBooks]);
 
@@ -80,6 +80,14 @@ export default function Favouritespage() {
     }
   };
 
+  const filterBySearchText = (data: organisedBooksData[]) => {
+    return data.filter(
+      (item) =>
+        item?.title?.toLowerCase().includes(searchText.toLowerCase()) ||
+        item?.subtitle?.toLowerCase().includes(searchText.toLowerCase())
+    );
+  };
+
   const searchFavourites = (searchText: string) => {
     setBooksData(
       reviewBooks
@@ -88,7 +96,7 @@ export default function Favouritespage() {
             item?.title?.toLowerCase().includes(searchText.toLowerCase()) ||
             item?.subtitle?.toLowerCase().includes(searchText.toLowerCase())
         )
-        .slice((pageIndex - 1) * 20, (pageIndex - 1) * 20 + 10)
+        .slice((pageIndex - 1) * 10, (pageIndex - 1) * 10 + 10)
     );
   };
 
@@ -182,138 +190,147 @@ export default function Favouritespage() {
   return (
     <div className={styles.PageContainer}>
       <NavBar />
-      <div className={styles.SearchContainer}>
-        <form onSubmit={handleSubmit}>
-          <input
-            className={styles.SearchInput}
-            data-testid="searchInput"
-            type="text"
-            onChange={(e) => {
-              setSearchText(e.target.value);
-            }}
-            value={searchText}
-          />
-          <button
-            className={`${styles.PrimaryBtn} ${styles.SearchBtn}`}
-            data-testid="searchBtn"
-            disabled={searchLoading}
-          >
-            {searchLoading ? "Loading.." : "Search"}
-          </button>
-        </form>
-        {recentSearch.length > 0 && (
-          <div className={styles.RecentSearchContainer}>
-            <span>Recent Searches:</span>
-            {recentSearch.map((search, index) => (
-              <div
-                className={styles.RecentSearch}
-                onClick={() => {
-                  setSearchText(search);
-                  searchFavourites(search);
-                  setPageIndex(1);
-                }}
-                key={index}
-              >
-                {search}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+
       <main className={styles.MainContainer}>
-        <div
-          className={`${styles.SearchingText} ${
-            !searchedText && styles.SearchingTextOff
-          }`}
-        >
-          Searching for: {searchedText}
-        </div>
-        <div className={styles.DisplayText}>Displaying - 10 </div>
-        <div className={styles.TableContainer}>
-          <table className={styles.Table}>
-            <thead>
-              <tr>
-                <th
-                  className={`${
-                    sort.field === "title" &&
-                    (sort.type === "asc"
-                      ? styles.SortActiveAsc
-                      : styles.SortActiveDesc)
-                  }`}
-                  onClick={() => toggleSort("title")}
-                >
-                  Title
-                </th>
-                <th
-                  className={`${
-                    sort.field === "authors" &&
-                    (sort.type === "asc"
-                      ? styles.SortActiveAsc
-                      : styles.SortActiveDesc)
-                  }`}
-                  onClick={() => toggleSort("authors")}
-                >
-                  Authors
-                </th>
-                <th
-                  className={`${
-                    sort.field === "publishedDate" &&
-                    (sort.type === "asc"
-                      ? styles.SortActiveAsc
-                      : styles.SortActiveDesc)
-                  }`}
-                  onClick={() => toggleSort("publishedDate")}
-                >
-                  Published Date
-                </th>
-                <th>More Details</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {!booksData && <td>No books currently reviewed</td>}
-              {booksData && booksData.length < 1 && (
-                <td>No more reviewed books</td>
-              )}
-              {booksData && booksData.length > 0 && <RenderBooks />}
-            </tbody>
-          </table>
-        </div>
-
-        <div className={styles.PageNavContainer}>
-          <button
-            className={styles.PrimaryBtn}
-            data-testid="prevBtn"
-            disabled={searchLoading}
-            onClick={() => pageIndex > 1 && setPageIndex((prev) => prev - 1)}
+        <div className={styles.Wrapper}>
+          <div className={styles.SearchContainer}>
+            <form onSubmit={handleSubmit}>
+              <input
+                className={styles.SearchInput}
+                data-testid="searchInput"
+                type="text"
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                }}
+                value={searchText}
+              />
+              <button
+                className={`${styles.PrimaryBtn} ${styles.SearchBtn}`}
+                data-testid="searchBtn"
+                disabled={searchLoading}
+              >
+                {searchLoading ? "Loading.." : "Search"}
+              </button>
+            </form>
+            {recentSearch.length > 0 && (
+              <div className={styles.RecentSearchContainer}>
+                <span>Recent Searches:</span>
+                {recentSearch.map((search, index) => (
+                  <div
+                    className={styles.RecentSearch}
+                    onClick={() => {
+                      setSearchText(search);
+                      searchFavourites(search);
+                      setPageIndex(1);
+                    }}
+                    key={index}
+                  >
+                    {search}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div
+            className={`${styles.SearchingText} ${
+              !searchedText && styles.SearchingTextOff
+            }`}
           >
-            Prev
-          </button>
-          <input
-            className={styles.PageNumInput}
-            data-testid="pageInput"
-            ref={pageInput}
-            onKeyDown={handlePageNumber}
-            placeholder={pageIndex.toString()}
-            type="number"
-            min={1}
-          />
-          <button
-            className={styles.PrimaryBtn}
-            data-testid="nextBtn"
-            disabled={searchLoading}
-            onClick={() => setPageIndex((prev) => prev + 1)}
-          >
-            Next
-          </button>
+            Searching for: {searchedText}
+          </div>
+          <div className={styles.DisplayText}>Displaying - 10 </div>
+          <div className={styles.TableContainer}>
+            <table className={styles.Table}>
+              <thead>
+                <tr>
+                  <th
+                    className={`${
+                      sort.field === "title" &&
+                      (sort.type === "asc"
+                        ? styles.SortActiveAsc
+                        : styles.SortActiveDesc)
+                    }`}
+                    onClick={() => toggleSort("title")}
+                  >
+                    Title
+                  </th>
+                  <th
+                    className={`${
+                      sort.field === "authors" &&
+                      (sort.type === "asc"
+                        ? styles.SortActiveAsc
+                        : styles.SortActiveDesc)
+                    }`}
+                    onClick={() => toggleSort("authors")}
+                  >
+                    Authors
+                  </th>
+                  <th
+                    className={`${
+                      sort.field === "publishedDate" &&
+                      (sort.type === "asc"
+                        ? styles.SortActiveAsc
+                        : styles.SortActiveDesc)
+                    }`}
+                    onClick={() => toggleSort("publishedDate")}
+                  >
+                    Published Date
+                  </th>
+                  <th>More Details</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {!booksData && (
+                  <tr>
+                    <td>No books currently reviewed</td>
+                  </tr>
+                )}
+                {booksData && booksData.length < 1 && (
+                  <tr>
+                    <td>No more reviewed books</td>
+                  </tr>
+                )}
+                {booksData && booksData.length > 0 && <RenderBooks />}
+              </tbody>
+            </table>
+          </div>
+
+          <div className={styles.PageNavContainer}>
+            <button
+              className={styles.PrimaryBtn}
+              data-testid="prevBtn"
+              disabled={searchLoading}
+              onClick={() => pageIndex > 1 && setPageIndex((prev) => prev - 1)}
+            >
+              Prev
+            </button>
+            <input
+              className={styles.PageNumInput}
+              data-testid="pageInput"
+              ref={pageInput}
+              onKeyDown={handlePageNumber}
+              placeholder={pageIndex.toString()}
+              type="number"
+              min={1}
+            />
+            <button
+              className={styles.PrimaryBtn}
+              data-testid="nextBtn"
+              disabled={searchLoading}
+              onClick={() => setPageIndex((prev) => prev + 1)}
+            >
+              Next
+            </button>
+          </div>
+          {toggleMoreInfo && selectedBook && (
+            <MoreInfoModal
+              book={selectedBook}
+              closeMoreInfoModal={closeMoreInfoModal}
+            />
+          )}
         </div>
-        {toggleMoreInfo && selectedBook && (
-          <MoreInfoModal
-            book={selectedBook}
-            closeMoreInfoModal={closeMoreInfoModal}
-          />
-        )}
       </main>
       <Footer />
     </div>

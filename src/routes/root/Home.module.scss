@@ -8,7 +8,6 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding: 0 40px;
 }
 
 .SearchingTextOff {
@@ -74,16 +73,16 @@
 
 .TableContainer {
   max-width: 1280px;
-  min-height: 400px;
+  min-height: 300px;
   overflow-x: auto;
   margin-left: auto;
   margin-right: auto;
+  border: 1px solid gray;
 }
 
 .Table {
   min-width: 1278px;
   text-align: center;
-  border: 1px solid gray;
   & > tbody > tr:nth-child(even) {
     background-color: #1d1b1b;
   }
@@ -106,6 +105,10 @@
   margin-left: auto;
   margin-right: auto;
   text-align: left;
+}
+
+.Wrapper {
+  padding: 15px 20px;
 }
 
 @media screen and (min-width: 768px) {
