@@ -48,7 +48,7 @@ export default function Favouritespage() {
 
   useEffect(() => {
     let searchTextFiletered = filterBySearchText(faviourites);
-
+    setSearchedText(searchText);
     setBooksData(
       searchTextFiletered.slice((pageIndex - 1) * 10, (pageIndex - 1) * 20 + 10)
     );
@@ -271,9 +271,15 @@ export default function Favouritespage() {
               </thead>
 
               <tbody>
-                {!booksData && <td>No books currently favourited</td>}
+                {!booksData && (
+                  <tr>
+                    <td>No books currently favourited</td>
+                  </tr>
+                )}
                 {booksData && booksData.length < 1 && (
-                  <td>No more faviourited books</td>
+                  <tr>
+                    <td>No more faviourited books</td>
+                  </tr>
                 )}
                 {booksData && booksData.length > 0 && <RenderBooks />}
               </tbody>
