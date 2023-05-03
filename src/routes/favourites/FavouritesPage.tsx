@@ -50,7 +50,7 @@ export default function Favouritespage() {
     let searchTextFiletered = filterBySearchText(faviourites);
     setSearchedText(searchText);
     setBooksData(
-      searchTextFiletered.slice((pageIndex - 1) * 10, (pageIndex - 1) * 20 + 10)
+      searchTextFiletered.slice((pageIndex - 1) * 10, (pageIndex - 1) * 10 + 10)
     );
   }, [pageIndex]);
 
@@ -84,7 +84,7 @@ export default function Favouritespage() {
             item?.title?.toLowerCase().includes(searchText.toLowerCase()) ||
             item?.subtitle?.toLowerCase().includes(searchText.toLowerCase())
         )
-        .slice((pageIndex - 1) * 20, (pageIndex - 1) * 20 + 10)
+        .slice((pageIndex - 1) * 10, (pageIndex - 1) * 10 + 10)
     );
   };
 
