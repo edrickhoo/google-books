@@ -282,16 +282,18 @@ export default function Favouritespage() {
               </thead>
 
               <tbody>
-                {!booksData && (
+                {reviewBooks.length === 0 && (
                   <tr>
                     <td>No books currently reviewed</td>
                   </tr>
                 )}
-                {booksData && booksData.length < 1 && (
-                  <tr>
-                    <td>No more reviewed books</td>
-                  </tr>
-                )}
+                {reviewBooks.length !== 0 &&
+                  booksData &&
+                  booksData.length < 1 && (
+                    <tr>
+                      <td>No more reviewed books</td>
+                    </tr>
+                  )}
                 {booksData && booksData.length > 0 && <RenderBooks />}
               </tbody>
             </table>

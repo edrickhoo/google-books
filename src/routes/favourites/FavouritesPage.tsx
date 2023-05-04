@@ -9,6 +9,7 @@ import { useAppDispatch } from "../../hooks";
 import { RootState } from "../../store";
 import styles from "../root/Home.module.scss";
 import Footer from "../../components/Footer/Footer";
+import favourites from "../../redux/favourites";
 
 interface sortType {
   field: keyof organisedBooksData;
@@ -271,16 +272,18 @@ export default function Favouritespage() {
               </thead>
 
               <tbody>
-                {!booksData && (
+                {faviourites.length === 0 && (
                   <tr>
                     <td>No books currently favourited</td>
                   </tr>
                 )}
-                {booksData && booksData.length < 1 && (
-                  <tr>
-                    <td>No more faviourited books</td>
-                  </tr>
-                )}
+                {faviourites.length !== 0 &&
+                  booksData &&
+                  booksData.length < 1 && (
+                    <tr>
+                      <td>No more faviourited books</td>
+                    </tr>
+                  )}
                 {booksData && booksData.length > 0 && <RenderBooks />}
               </tbody>
             </table>
