@@ -28,6 +28,7 @@ const TableEntry = ({ book, handleOpenModal }: Props) => {
       <td>{book.publishedDate}</td>
       <td>
         <span
+          data-testid="MoreDetails"
           className={styles.MoreDetails}
           onClick={() => {
             handleOpenModal(book);

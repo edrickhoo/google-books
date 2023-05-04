@@ -9,6 +9,7 @@ import Home from "./Home";
 import { useBooksQuery } from "../../queryHooks/booksQuery";
 import { AxiosError } from "axios";
 import * as ReactQuery from "react-query";
+import { BrowserRouter } from "react-router-dom";
 
 jest.mock("../../queryHooks/booksQuery");
 
@@ -24,7 +25,9 @@ const queryClient = new QueryClient({
 
 const wrapper = ({ children }: { children: ReactNode }) => (
   <Provider store={store}>
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </BrowserRouter>
   </Provider>
 );
 

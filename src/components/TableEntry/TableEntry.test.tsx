@@ -7,16 +7,19 @@ import { store } from "../../store";
 import TableEntry from "./TableEntry";
 import { organisedBooksData } from "../../api/google-books-api";
 import { ReactNode } from "react";
+import { BrowserRouter } from "react-router-dom";
 
 const wrapper = ({ children }: { children: ReactNode }) => (
   <Provider store={store}>
-    <table>
-      <tbody>{children}</tbody>
-    </table>
+    <BrowserRouter>
+      <table>
+        <tbody>{children}</tbody>
+      </table>
+    </BrowserRouter>
   </Provider>
 );
 
-describe("MoreInfoModal Component Tests", () => {
+describe("TableEntry Component Tests", () => {
   const mockBook: organisedBooksData = {
     id: "16",
     title: "Harry",
@@ -42,8 +45,7 @@ describe("MoreInfoModal Component Tests", () => {
     render(<TableEntry book={mockBook} handleOpenModal={handleOpenModal} />, {
       wrapper,
     });
-
-    const link = screen.getByText(/Link/i);
+    const link = screen.getByTestId("MoreDetails");
     await userEvent.click(link);
     expect(handleOpenModal).toBeCalled();
     await userEvent.click(link);
