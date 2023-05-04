@@ -1,14 +1,5 @@
 @import "../../../mixins/mixins.scss";
 @import "../../../mixins/palette/palette.scss";
-.Background {
-  background-color: rgba(0, 0, 0, 0.3);
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  height: 100dvh;
-  width: 100%;
-}
 
 .Card {
   display: flex;
