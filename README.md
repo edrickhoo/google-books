@@ -12,7 +12,7 @@
 ## Deployed Version
 
 
-* [Link]()
+* [Link](https://google-books-edric.vercel.app/)
 
 
 ## Setup
