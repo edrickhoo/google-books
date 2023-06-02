@@ -7,7 +7,6 @@ describe("Footer component", () => {
     const { getByText } = render(<Footer />);
     screen.logTestingPlaygroundURL();
     const nameElement = getByText(/edric khoo/i);
-    console.log(nameElement);
     expect(nameElement).toBeInTheDocument();
   });
 
