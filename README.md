@@ -6,7 +6,11 @@
 
 ### Desktop
 #### Home Page
-![Screenshot]()
+![Screenshot](./screenshot/googlebooksv2-thumbnail.png)
+#### Review Page
+![Screenshot](./screenshot/googlebooksv2-review-page.png)
+#### Mobile Reviews
+![Screenshot](./screenshot/googlebooksv2-mobile-reviews.png)
 
 
 ## Deployed Version
