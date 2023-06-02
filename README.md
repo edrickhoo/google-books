@@ -1,5 +1,6 @@
 # Google-Books
 
+![github actions](https://github.com/edrickhoo/google-books/actions/workflows/node.js.yml/badge.svg)
 
 ## Preview
 
